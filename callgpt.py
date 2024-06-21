@@ -3,7 +3,7 @@ from openai import OpenAI # to connect to GPT
 
 ###### CONNECT TO GPT #######
 def callgpt(prompt):
-    client = OpenAI(api_key="sk-proj-Mmo7oPaItEfPOgogjJMzT3BlbkFJURDOYY0HsOzD8mAIulE8") # defaults to getting the key using os.environ.get("OPENAI_API_KEY")
+    client = OpenAI() # defaults to getting the key using os.environ.get("OPENAI_API_KEY")
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo-0125",
         messages=[
