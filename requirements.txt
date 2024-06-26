@@ -4,3 +4,4 @@ opencv-python==4.10.0.82
 matplotlib==3.9.0
 openai==1.33.0
 streamlit
+python-dotenv
