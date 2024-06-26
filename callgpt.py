@@ -1,18 +1,51 @@
-from openai import OpenAI # to connect to GPT
+from openai import OpenAI 
+from dotenv import load_dotenv
+import os
+import base64
 # import replicate # to connect to llama3
 
-###### CONNECT TO GPT #######
-def callgpt(prompt):
-    client = OpenAI() # defaults to getting the key using os.environ.get("OPENAI_API_KEY")
+load_dotenv()
+
+def get_translation(image_path):
+    example_output = """{
+        japanese_name:xx, 
+        english_name:yy, 
+        desrpiption:zz,
+        allergens: [allergen1, allergen2, allergen3]
+        }"""
+    
+    api_key = os.getenv('OPENAI_API_KEY')   
+    client = OpenAI(api_key=api_key) 
+    
+    with open(image_path, "rb") as image_file:
+        image_base64 = base64.b64encode(image_file.read()).decode("utf-8")
+         
     completion = client.chat.completions.create(
-        model="gpt-3.5-turbo-0125",
+        model="gpt-4o",
         messages=[
-            # {"role": "system", "content": "You are a poetic assistant, skilled in explaining complex programming concepts with creative flair."},
-            # {"role": "user", "content": "Compose a poem that explains the concept of recursion in programming."}
-            {"role": "user", "content": prompt}
-        ]
+            {
+                "role": "system", 
+                "content": f"You are a translator proficient in various languages.\
+                            First, translate a menu from Japanese to English.\
+                            Then, generate a description of each dish in 30words.\
+                            Finally, list the allergens for each dish.\
+                            Return in JSON format. Example shown: {example_output}"
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url" : f"data:image/jpeg;base64,{image_base64},"
+                        }
+                    }
+                ]
+            }
+        ],
+        response_format={"type": "json_object"}
     )
-    print('completed')
+
     print(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
@@ -73,3 +106,7 @@ The answer should return in the below format:
 
 # plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGBA))
 # plt.show()
+
+if __name__ == "__main__":
+    test = get_translation('image_13.png')
+    test2 = get_translation('image_12.jpg')
